@@ -1,0 +1,220 @@
+{
+  "id": "marketmind-ai-flow",
+  "name": "MarketMind AI – Intelligent Market Research Pipeline",
+  "description": "Multi-agent market research workflow using IBM Granite via IBM watsonx.ai + RAG",
+  "nodes": [
+    {
+      "id": "input_node",
+      "type": "ChatInput",
+      "data": {
+        "node": {
+          "template": {
+            "input_value": { "value": "Analyze the Indian Electric Vehicle market" },
+            "should_store_message": { "value": true },
+            "sender": { "value": "User" },
+            "sender_name": { "value": "User" },
+            "session_id": { "value": "" }
+          },
+          "description": "User market research query input",
+          "display_name": "User Query",
+          "documentation": "Enter a market, product, or company to analyze"
+        }
+      },
+      "position": { "x": 50, "y": 300 }
+    },
+    {
+      "id": "research_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "url": { "value": "https://us-south.ml.cloud.ibm.com" },
+            "max_new_tokens": { "value": 1024 },
+            "temperature": { "value": 0.7 },
+            "system_message": {
+              "value": "You are an expert market research analyst. Generate structured JSON market analysis including market size, growth rate, key players, drivers, challenges, and executive summary."
+            }
+          },
+          "description": "Research Agent – IBM Granite market intelligence gathering",
+          "display_name": "Research Agent (IBM Granite)",
+          "documentation": "Calls IBM Granite via watsonx.ai to gather market intelligence"
+        }
+      },
+      "position": { "x": 320, "y": 100 }
+    },
+    {
+      "id": "rag_retriever",
+      "type": "RAGChain",
+      "data": {
+        "node": {
+          "template": {
+            "vector_store_type": { "value": "FAISS" },
+            "embedding_model": { "value": "all-MiniLM-L6-v2" },
+            "chunk_size": { "value": 512 },
+            "chunk_overlap": { "value": 64 },
+            "top_k": { "value": 5 }
+          },
+          "description": "RAG Agent – document retrieval from indexed knowledge base",
+          "display_name": "RAG Knowledge Agent",
+          "documentation": "Retrieves relevant chunks from uploaded documents using FAISS vector search"
+        }
+      },
+      "position": { "x": 320, "y": 280 }
+    },
+    {
+      "id": "competitor_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "max_new_tokens": { "value": 1024 },
+            "temperature": { "value": 0.5 },
+            "system_message": {
+              "value": "You are a competitive intelligence analyst. Analyze competitors in the given market and return structured JSON with market share, strengths, weaknesses, and positioning for each player."
+            }
+          },
+          "description": "Competitor Analysis Agent – IBM Granite competitive intelligence",
+          "display_name": "Competitor Analysis Agent",
+          "documentation": "Maps competitive landscape with strengths, weaknesses, and market positioning"
+        }
+      },
+      "position": { "x": 600, "y": 100 }
+    },
+    {
+      "id": "sentiment_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "max_new_tokens": { "value": 800 },
+            "temperature": { "value": 0.4 },
+            "system_message": {
+              "value": "You are a customer sentiment analyst. Analyze customer sentiment for the given market/product and return JSON with positive/neutral/negative percentages, key themes, and NPS score."
+            }
+          },
+          "description": "Sentiment Analysis Agent – customer voice analysis",
+          "display_name": "Sentiment Analysis Agent",
+          "documentation": "Analyzes customer reviews and feedback to extract sentiment metrics"
+        }
+      },
+      "position": { "x": 600, "y": 280 }
+    },
+    {
+      "id": "trend_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "max_new_tokens": { "value": 1024 },
+            "temperature": { "value": 0.6 },
+            "system_message": {
+              "value": "You are a market trends analyst. Identify emerging trends, historical patterns, technology shifts, and demand trends for the given market. Return structured JSON."
+            }
+          },
+          "description": "Market Trend Agent – emerging trends and historical pattern analysis",
+          "display_name": "Market Trend Agent",
+          "documentation": "Identifies emerging trends, historical patterns, and technology shifts"
+        }
+      },
+      "position": { "x": 880, "y": 100 }
+    },
+    {
+      "id": "prediction_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "max_new_tokens": { "value": 1024 },
+            "temperature": { "value": 0.5 },
+            "system_message": {
+              "value": "You are a predictive analytics expert. Based on provided trend data, generate market size forecasts, demand predictions, scenario analysis (best/base/worst case), opportunities, and risks. Always include AI disclaimer. Return JSON."
+            }
+          },
+          "description": "Predictive Insights Agent – market forecasting and scenario analysis",
+          "display_name": "Predictive Insights Agent",
+          "documentation": "Generates 5-year market forecasts and scenario analysis using IBM Granite"
+        }
+      },
+      "position": { "x": 880, "y": 280 }
+    },
+    {
+      "id": "report_agent",
+      "type": "WatsonxAIModel",
+      "data": {
+        "node": {
+          "template": {
+            "model_id": { "value": "ibm/granite-13b-instruct-v2" },
+            "project_id": { "value": "{WATSONX_PROJECT_ID}" },
+            "api_key": { "value": "{WATSONX_API_KEY}" },
+            "max_new_tokens": { "value": 2048 },
+            "temperature": { "value": 0.4 },
+            "system_message": {
+              "value": "You are a senior business intelligence consultant. Compile all research data into a professional executive report with executive summary, key findings, strategic recommendations, and conclusion. Return structured JSON."
+            }
+          },
+          "description": "Report Generation Agent – executive summary and business intelligence report",
+          "display_name": "Report Generation Agent",
+          "documentation": "Compiles all agent outputs into a comprehensive BI report"
+        }
+      },
+      "position": { "x": 1160, "y": 190 }
+    },
+    {
+      "id": "output_node",
+      "type": "ChatOutput",
+      "data": {
+        "node": {
+          "template": {
+            "input_value": { "value": "" },
+            "should_store_message": { "value": true },
+            "sender": { "value": "Machine" },
+            "sender_name": { "value": "MarketMind AI" },
+            "session_id": { "value": "" }
+          },
+          "description": "Final research output with all agent results",
+          "display_name": "Dashboard Output",
+          "documentation": "Returns complete market research JSON for dashboard rendering"
+        }
+      },
+      "position": { "x": 1400, "y": 300 }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "input_node", "target": "research_agent", "animated": true },
+    { "id": "e2", "source": "input_node", "target": "rag_retriever", "animated": true },
+    { "id": "e3", "source": "research_agent", "target": "competitor_agent", "animated": true },
+    { "id": "e4", "source": "research_agent", "target": "sentiment_agent", "animated": true },
+    { "id": "e5", "source": "rag_retriever", "target": "competitor_agent", "animated": true },
+    { "id": "e6", "source": "competitor_agent", "target": "trend_agent", "animated": true },
+    { "id": "e7", "source": "sentiment_agent", "target": "trend_agent", "animated": true },
+    { "id": "e8", "source": "trend_agent", "target": "prediction_agent", "animated": true },
+    { "id": "e9", "source": "prediction_agent", "target": "report_agent", "animated": true },
+    { "id": "e10", "source": "competitor_agent", "target": "report_agent", "animated": true },
+    { "id": "e11", "source": "sentiment_agent", "target": "report_agent", "animated": true },
+    { "id": "e12", "source": "report_agent", "target": "output_node", "animated": true }
+  ],
+  "viewport": { "x": 0, "y": 0, "zoom": 0.9 },
+  "metadata": {
+    "description": "MarketMind AI – Multi-agent market research pipeline",
+    "agents": 7,
+    "model": "IBM Granite (ibm/granite-13b-instruct-v2)",
+    "platform": "IBM watsonx.ai",
+    "rag": true,
+    "created": "2025"
+  }
+}
